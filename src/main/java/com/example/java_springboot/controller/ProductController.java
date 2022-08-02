@@ -1,12 +1,17 @@
 package com.example.java_springboot.controller;
 
+import com.example.java_springboot.entity.Order;
 import com.example.java_springboot.entity.Product;
+import com.example.java_springboot.service.OrderService;
 import com.example.java_springboot.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -15,7 +20,8 @@ public class ProductController {
 
     @Autowired
     ProductService productService;
-
+    @Autowired
+    OrderService orderService;
     @RequestMapping(method = RequestMethod.GET, path = "/products")
     public Page<Product> getList(@RequestParam(defaultValue = "1") int page,
                                  @RequestParam(defaultValue = "1") int limit) {
@@ -61,27 +67,28 @@ public class ProductController {
         existing.setPromotion_price(updateProduct.getPromotion_price());
         existing.setStatus(updateProduct.getStatus());
         existing.setQty(updateProduct.getQty());
+        existing.setCategory(updateProduct.getCategory());
         productService.save(existing);
         return updateProduct;
     }
 
-//    @RequestMapping(method = RequestMethod.GET, path = "add-order")
-//    public ResponseEntity<?> addProductToOrder(
-//            @RequestParam int orderId,
-//            @RequestParam int productId) {
-//        // check sự tồn tại cùa product
-//        Optional<Product> optionalProduct = productService.findById(productId) ;
-//        // check sự tồn tại của order
-//        Optional<Order> optionalOrder = orderService.findById(orderId) ;
-//        // trả về not found nếu một trong 2 trường hợp không tìm thấy
-//        if (!optionalProduct.isPresent() || !optionalOrder.isPresent()){
-//            return new ResponseEntity<>( "Not found", HttpStatus.NOT_FOUND) ;
-//        }
-//        boolean resutlt = productService.addProductToClass(optionalProduct.get(), optionalOrder.get());
-//        if (!resutlt) {
-//            return new ResponseEntity<>("Add product error!", HttpStatus.INTERNAL_SERVER_ERROR) ;
-//        }
-//        return new ResponseEntity<>( "Add product success!", HttpStatus.OK);
-//    }
+    @RequestMapping(method = RequestMethod.GET, path = "add-order")
+    public ResponseEntity<?> addProductToOrder(
+            @RequestParam int orderId,
+            @RequestParam int productId) {
+        // check sự tồn tại cùa product
+        Optional<Product> optionalProduct = productService.findById(productId) ;
+        // check sự tồn tại của order
+        Optional<Order> optionalOrder = orderService.findById(orderId) ;
+        // trả về not found nếu một trong 2 trường hợp không tìm thấy
+        if (!optionalProduct.isPresent() || !optionalOrder.isPresent()){
+            return new ResponseEntity<>( "Not found", HttpStatus.NOT_FOUND) ;
+        }
+        boolean resutlt = productService.addProductToClass(optionalProduct.get(), optionalOrder.get());
+        if (!resutlt) {
+            return new ResponseEntity<>("Add product error!", HttpStatus.INTERNAL_SERVER_ERROR) ;
+        }
+        return new ResponseEntity<>( "Add product success!", HttpStatus.OK);
+    }
 }
 

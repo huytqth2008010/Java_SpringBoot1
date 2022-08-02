@@ -16,11 +16,6 @@ public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
 
-    public Page<Comment> findAll(int page, int limit) {
-        return commentRepository.findAll(
-                PageRequest.of(page - 1, limit));
-    }
-
     public List<Comment> getAll() {
         return commentRepository.findAll();
     }

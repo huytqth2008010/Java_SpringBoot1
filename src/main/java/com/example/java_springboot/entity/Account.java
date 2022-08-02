@@ -25,5 +25,6 @@ public class Account {
     private Date createdAt;
     private Date updatedAt;
     private int status;
+    private String device_information;
     private String verifyCode;
 }
